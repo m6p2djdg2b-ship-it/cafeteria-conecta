@@ -2,9 +2,12 @@
    Aplicación web sencilla para consultar el menú, hacer pedidos y seguir su estado.
    Los datos se guardan en localStorage, así que no necesita servidor. */
 
+"use strict";
+
 const CLAVE = "cafeteria-conecta-v1";
 const ESTADOS = ["Recibido", "En preparación", "Listo"];
 const CLASE_ESTADO = ["recibido", "preparacion", "listo"];
+const MAX_POR_PRODUCTO = 10; // evita pedidos por error con cantidades absurdas
 
 const MENU_INICIAL = [
   { id: 1, nombre: "Café americano", precio: 4500, disponible: true },
@@ -20,13 +23,25 @@ const MENU_INICIAL = [
 /* ---------- Estado y almacenamiento ---------- */
 
 function datosIniciales() {
-  return { menu: MENU_INICIAL, pedidos: [], proximoNumero: 1, misPedidos: [] };
+  // Se copian los productos para que marcar uno como agotado no altere MENU_INICIAL
+  // y "Reiniciar datos" restaure de verdad el menú original.
+  return { menu: MENU_INICIAL.map((p) => ({ ...p })), pedidos: [], proximoNumero: 1, misPedidos: [] };
+}
+
+function esValido(d) {
+  return Boolean(d)
+    && Array.isArray(d.menu) && Array.isArray(d.pedidos) && Array.isArray(d.misPedidos)
+    && Number.isInteger(d.proximoNumero);
 }
 
 function cargar() {
   try {
     const guardado = localStorage.getItem(CLAVE);
-    if (guardado) return JSON.parse(guardado);
+    if (guardado) {
+      const leidos = JSON.parse(guardado);
+      if (esValido(leidos)) return leidos;
+      console.warn("Los datos guardados no tienen el formato esperado; se usan los iniciales.");
+    }
   } catch (e) {
     console.warn("No se pudieron leer los datos guardados:", e);
   }
@@ -60,6 +75,11 @@ function escapar(texto) {
 
 function numeroPedido(n) {
   return "#" + String(n).padStart(3, "0");
+}
+
+function hora(iso) {
+  const fecha = new Date(iso);
+  return isNaN(fecha) ? "" : fecha.toLocaleTimeString("es-CO", { hour: "2-digit", minute: "2-digit" });
 }
 
 function totalPedido(items) {
@@ -112,6 +132,19 @@ function pintarCarrito() {
   $("total-carrito").textContent = items.length ? "Total: " + dinero(totalPedido(items)) : "";
 }
 
+// Quita del pedido en curso los productos que ya no están disponibles. Devuelve true si quitó alguno.
+function quitarAgotados() {
+  let quitados = false;
+  Object.keys(carrito).forEach((id) => {
+    const p = producto(Number(id));
+    if (!p || !p.disponible) {
+      delete carrito[id];
+      quitados = true;
+    }
+  });
+  return quitados;
+}
+
 function mostrarError(mensaje) {
   const el = $("error-pedido");
   el.textContent = mensaje;
@@ -119,6 +152,13 @@ function mostrarError(mensaje) {
 }
 
 function confirmarPedido() {
+  // El encargado pudo marcar un producto como agotado desde otra pestaña.
+  if (quitarAgotados()) {
+    pintarMenu();
+    pintarCarrito();
+    return mostrarError("Un producto se agotó y lo quitamos de tu pedido. Revísalo y confirma de nuevo.");
+  }
+
   const items = itemsDelCarrito();
   const nombre = $("nombre-cliente").value.trim();
 
@@ -156,6 +196,7 @@ function tarjetaPedido(p, conBoton) {
     <h3><span>${numeroPedido(p.numero)} · ${escapar(p.cliente)}</span>
         <span class="estado ${CLASE_ESTADO[p.estado]}">${ESTADOS[p.estado]}</span></h3>
     <ul>${lista}</ul>
+    <p class="hora">Pedido a las ${hora(p.creado)}</p>
     <p class="total-pedido">Total: ${dinero(totalPedido(p.items))}</p>
     <div class="progreso" aria-hidden="true">${progreso}</div>
     ${boton}
@@ -187,7 +228,7 @@ function pintarTablero() {
   $("tablero").innerHTML = ESTADOS.map((nombre, i) => {
     const pedidos = datos.pedidos.filter((p) => p.estado === i);
     const contenido = pedidos.length
-      ? `<ul class="tarjetas" style="display:block">${pedidos.map((p) => tarjetaPedido(p, true)).join("")}</ul>`
+      ? `<ul class="tarjetas en-columna">${pedidos.map((p) => tarjetaPedido(p, true)).join("")}</ul>`
       : '<p class="vacio">Sin pedidos.</p>';
     return `<div class="columna"><h3>${nombre} (${pedidos.length})</h3>${contenido}</div>`;
   }).join("");
@@ -211,8 +252,9 @@ function pintarDisponibilidad() {
 
 function cambiarDisponibilidad(id) {
   const p = producto(id);
+  if (!p) return;
   p.disponible = !p.disponible;
-  if (!p.disponible) delete carrito[p.id]; // un producto agotado sale del pedido en curso
+  quitarAgotados(); // un producto agotado sale del pedido en curso
   guardar();
   pintarTodo();
 }
@@ -223,6 +265,7 @@ function cambiarVista(vista) {
   ["cliente", "encargado"].forEach((v) => {
     $("vista-" + v).hidden = v !== vista;
     $("tab-" + v).setAttribute("aria-selected", String(v === vista));
+    $("tab-" + v).tabIndex = v === vista ? 0 : -1;
   });
 }
 
@@ -243,6 +286,10 @@ document.addEventListener("click", (e) => {
   const id = Number(btn.dataset.id);
   switch (btn.dataset.accion) {
     case "agregar":
+      if ((carrito[id] || 0) >= MAX_POR_PRODUCTO) {
+        mostrarError(`Máximo ${MAX_POR_PRODUCTO} unidades de cada producto por pedido.`);
+        break;
+      }
       carrito[id] = (carrito[id] || 0) + 1;
       mostrarError("");
       pintarMenu(); pintarCarrito();
@@ -258,6 +305,14 @@ document.addEventListener("click", (e) => {
       cambiarDisponibilidad(id);
       break;
   }
+});
+
+// Pestañas: se pueden cambiar con las flechas del teclado.
+document.querySelector(".pestanas").addEventListener("keydown", (e) => {
+  if (e.key !== "ArrowLeft" && e.key !== "ArrowRight") return;
+  const vista = e.target.dataset.vista === "cliente" ? "encargado" : "cliente";
+  cambiarVista(vista);
+  $("tab-" + vista).focus();
 });
 
 $("btn-confirmar").addEventListener("click", confirmarPedido);
@@ -276,8 +331,10 @@ $("btn-reiniciar").addEventListener("click", () => {
 window.addEventListener("storage", (e) => {
   if (e.key === CLAVE) {
     datos = cargar();
+    quitarAgotados();
     pintarTodo();
   }
 });
 
+cambiarVista("cliente");
 pintarTodo();

@@ -115,6 +115,7 @@ main { max-width: 980px; margin: 0 auto; padding: 0 1rem 3rem; }
 .tarjeta-pedido { background: var(--tarjeta); border: 1px solid var(--linea); border-radius: var(--radio); padding: .9rem 1rem; }
 .tarjeta-pedido h3 { font-size: 1rem; display: flex; justify-content: space-between; align-items: center; gap: .5rem; }
 .tarjeta-pedido ul { margin: .3rem 0 .5rem; padding-left: 1.1rem; color: var(--tinta-suave); font-size: .95rem; }
+.tarjeta-pedido .hora { margin: 0 0 .2rem; font-size: .85rem; color: var(--tinta-suave); }
 .tarjeta-pedido .total-pedido { margin: 0; font-size: .95rem; }
 
 /* Estado: se comunica con texto y color, nunca solo con color */
@@ -147,3 +148,4 @@ main { max-width: 980px; margin: 0 auto; padding: 0 1rem 3rem; }
 
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
 .pedido .primario { margin-top: .9rem; }
+.tarjetas.en-columna { display: block; }

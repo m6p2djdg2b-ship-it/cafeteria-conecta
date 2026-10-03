@@ -3,10 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Cafetería Conecta: consulta el menú, haz tu pedido y mira su estado sin hacer fila.">
   <title>Cafetería Conecta</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 100 100%27%3E%3Ctext y=%27.9em%27 font-size=%2790%27%3E%E2%98%95%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <noscript><p style="padding:1rem">Esta aplicación necesita JavaScript activado para funcionar.</p></noscript>
   <header class="cabecera">
     <div class="marca">
       <h1>Cafetería Conecta</h1>
@@ -14,7 +17,7 @@
     </div>
     <nav class="pestanas" role="tablist" aria-label="Vista de la aplicación">
       <button role="tab" id="tab-cliente" aria-selected="true" aria-controls="vista-cliente" data-vista="cliente">Soy cliente</button>
-      <button role="tab" id="tab-encargado" aria-selected="false" aria-controls="vista-encargado" data-vista="encargado">Soy encargado</button>
+      <button role="tab" id="tab-encargado" aria-selected="false" tabindex="-1" aria-controls="vista-encargado" data-vista="encargado">Soy encargado</button>
     </nav>
   </header>
 
