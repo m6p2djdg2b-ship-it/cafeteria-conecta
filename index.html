@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Cafetería Conecta</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="cabecera">
+    <div class="marca">
+      <h1>Cafetería Conecta</h1>
+      <p>Pide sin hacer fila y mira cuánto falta para tu pedido.</p>
+    </div>
+    <nav class="pestanas" role="tablist" aria-label="Vista de la aplicación">
+      <button role="tab" id="tab-cliente" aria-selected="true" aria-controls="vista-cliente" data-vista="cliente">Soy cliente</button>
+      <button role="tab" id="tab-encargado" aria-selected="false" aria-controls="vista-encargado" data-vista="encargado">Soy encargado</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- ================= VISTA CLIENTE ================= -->
+    <section id="vista-cliente" role="tabpanel" aria-labelledby="tab-cliente">
+      <div class="cliente-grid">
+        <div>
+          <h2>Menú</h2>
+          <ul id="lista-menu" class="menu"></ul>
+        </div>
+
+        <aside class="panel pedido">
+          <h2>Tu pedido</h2>
+          <ul id="lista-carrito" class="carrito"></ul>
+          <p id="total-carrito" class="total"></p>
+          <label for="nombre-cliente">Tu nombre</label>
+          <input id="nombre-cliente" type="text" maxlength="30" autocomplete="given-name" placeholder="Ej. Laura">
+          <p id="error-pedido" class="error" role="alert" hidden></p>
+          <button id="btn-confirmar" class="primario" type="button">Confirmar pedido</button>
+        </aside>
+      </div>
+
+      <section class="estado-cliente" aria-labelledby="titulo-estado">
+        <h2 id="titulo-estado">Estado de tu pedido</h2>
+        <form id="form-buscar" class="buscar">
+          <label for="numero-buscar">Buscar por número de pedido</label>
+          <div class="buscar-fila">
+            <input id="numero-buscar" type="number" min="1" inputmode="numeric" placeholder="Ej. 3">
+            <button type="submit">Consultar</button>
+          </div>
+        </form>
+        <p id="resultado-buscar" class="aviso" aria-live="polite"></p>
+        <ul id="mis-pedidos" class="tarjetas"></ul>
+      </section>
+    </section>
+
+    <!-- ================= VISTA ENCARGADO ================= -->
+    <section id="vista-encargado" role="tabpanel" aria-labelledby="tab-encargado" hidden>
+      <h2>Pedidos</h2>
+      <div id="tablero" class="tablero"></div>
+
+      <h2>Disponibilidad del menú</h2>
+      <ul id="lista-disponibilidad" class="disponibilidad"></ul>
+
+      <p class="pie-encargado">
+        <button id="btn-reiniciar" type="button" class="secundario">Reiniciar datos de demostración</button>
+      </p>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

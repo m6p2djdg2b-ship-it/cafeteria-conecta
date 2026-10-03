@@ -1,0 +1,149 @@
+/* Cafetería Conecta - estilos
+   Paleta: tinta verdosa, papel frío, verde azulado (marca), ámbar (en preparación), verde (listo). */
+:root {
+  --tinta: #1c2a29;
+  --tinta-suave: #52605e;
+  --papel: #f5f7f6;
+  --tarjeta: #ffffff;
+  --linea: #d9e0de;
+  --marca: #0e6a65;
+  --marca-oscura: #0a4f4b;
+  --ambar: #b97700;
+  --ambar-fondo: #fdf1d8;
+  --listo: #25773f;
+  --listo-fondo: #dff2e5;
+  --recibido-fondo: #e6ecea;
+  --error: #b3261e;
+  --radio: 10px;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--tinta);
+  background: var(--papel);
+  line-height: 1.5;
+}
+
+h1, h2, h3 { line-height: 1.2; margin: 0 0 .6rem; }
+h1 { font-size: 1.6rem; }
+h2 { font-size: 1.2rem; margin-top: 1.6rem; }
+
+button, input { font: inherit; }
+
+button {
+  cursor: pointer;
+  border: 1px solid var(--linea);
+  background: var(--tarjeta);
+  color: var(--tinta);
+  padding: .5rem .9rem;
+  border-radius: var(--radio);
+}
+button:hover { border-color: var(--marca); }
+button:disabled { opacity: .5; cursor: not-allowed; }
+button.primario { background: var(--marca); border-color: var(--marca); color: #fff; width: 100%; padding: .7rem; font-weight: 600; }
+button.primario:hover { background: var(--marca-oscura); }
+button.secundario { color: var(--tinta-suave); }
+
+:focus-visible { outline: 3px solid #f2b705; outline-offset: 2px; }
+
+input[type="text"], input[type="number"] {
+  width: 100%;
+  padding: .55rem .7rem;
+  border: 1px solid var(--linea);
+  border-radius: var(--radio);
+  background: #fff;
+}
+label { display: block; font-weight: 600; margin: .8rem 0 .3rem; font-size: .95rem; }
+
+/* ---------- Cabecera ---------- */
+.cabecera {
+  background: var(--marca);
+  color: #fff;
+  padding: 1.2rem 1rem 0;
+}
+.cabecera .marca { max-width: 980px; margin: 0 auto; padding-bottom: 1rem; }
+.cabecera p { margin: 0; opacity: .9; }
+.pestanas { max-width: 980px; margin: 0 auto; display: flex; gap: .4rem; }
+.pestanas button {
+  background: transparent; color: #fff; border: 0; border-radius: var(--radio) var(--radio) 0 0;
+  padding: .6rem 1.1rem; opacity: .85;
+}
+.pestanas button[aria-selected="true"] { background: var(--papel); color: var(--tinta); opacity: 1; font-weight: 600; }
+
+main { max-width: 980px; margin: 0 auto; padding: 0 1rem 3rem; }
+
+/* ---------- Cliente ---------- */
+.cliente-grid { display: grid; grid-template-columns: 1fr 320px; gap: 1.5rem; align-items: start; }
+@media (max-width: 760px) { .cliente-grid { grid-template-columns: 1fr; } }
+
+.menu, .carrito, .tarjetas, .disponibilidad { list-style: none; margin: 0; padding: 0; }
+
+.menu li {
+  display: grid; grid-template-columns: 1fr auto; gap: .2rem 1rem; align-items: center;
+  background: var(--tarjeta); border: 1px solid var(--linea); border-radius: var(--radio);
+  padding: .8rem 1rem; margin-bottom: .6rem;
+}
+.menu .nombre { font-weight: 600; }
+.menu .precio { color: var(--tinta-suave); font-size: .95rem; }
+.menu li.agotado { opacity: .6; }
+.etiqueta { font-size: .8rem; padding: .1rem .5rem; border-radius: 999px; background: var(--recibido-fondo); color: var(--tinta-suave); }
+.etiqueta.ok { background: var(--listo-fondo); color: var(--listo); }
+
+.cantidad { display: flex; align-items: center; gap: .5rem; grid-row: span 2; grid-column: 2; }
+.cantidad button { width: 2.2rem; height: 2.2rem; padding: 0; font-size: 1.1rem; line-height: 1; }
+.cantidad output { min-width: 1.5rem; text-align: center; font-weight: 600; }
+
+.panel { background: var(--tarjeta); border: 1px solid var(--linea); border-radius: var(--radio); padding: 1rem 1.1rem 1.2rem; }
+.pedido { position: sticky; top: 1rem; }
+.pedido h2 { margin-top: 0; }
+@media (max-width: 760px) { .pedido { position: static; } }
+
+.carrito li { display: flex; justify-content: space-between; gap: 1rem; padding: .35rem 0; border-bottom: 1px dashed var(--linea); }
+.carrito .vacio { color: var(--tinta-suave); border-bottom: 0; }
+.total { font-weight: 700; font-size: 1.1rem; margin: .8rem 0 0; }
+.error { color: var(--error); margin: .6rem 0 0; font-size: .95rem; }
+.aviso { color: var(--tinta-suave); margin: .6rem 0; }
+
+.estado-cliente { margin-top: 2rem; }
+.buscar-fila { display: flex; gap: .5rem; max-width: 360px; }
+.buscar-fila button { white-space: nowrap; }
+
+.tarjetas { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: .8rem; }
+.tarjeta-pedido { background: var(--tarjeta); border: 1px solid var(--linea); border-radius: var(--radio); padding: .9rem 1rem; }
+.tarjeta-pedido h3 { font-size: 1rem; display: flex; justify-content: space-between; align-items: center; gap: .5rem; }
+.tarjeta-pedido ul { margin: .3rem 0 .5rem; padding-left: 1.1rem; color: var(--tinta-suave); font-size: .95rem; }
+.tarjeta-pedido .total-pedido { margin: 0; font-size: .95rem; }
+
+/* Estado: se comunica con texto y color, nunca solo con color */
+.estado { font-size: .85rem; font-weight: 600; padding: .15rem .6rem; border-radius: 999px; white-space: nowrap; }
+.estado.recibido { background: var(--recibido-fondo); color: var(--tinta); }
+.estado.preparacion { background: var(--ambar-fondo); color: var(--ambar); }
+.estado.listo { background: var(--listo-fondo); color: var(--listo); }
+
+/* Barra de progreso del estado (3 pasos) */
+.progreso { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin: .6rem 0 .2rem; }
+.progreso span { height: 6px; border-radius: 3px; background: var(--linea); }
+.progreso span.activo { background: var(--marca); }
+
+/* ---------- Encargado ---------- */
+.tablero { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; align-items: start; }
+@media (max-width: 760px) { .tablero { grid-template-columns: 1fr; } }
+.columna { background: #eaefed; border-radius: var(--radio); padding: .8rem; min-height: 120px; }
+.columna h3 { font-size: 1rem; margin-bottom: .6rem; }
+.columna .tarjeta-pedido { margin-bottom: .6rem; }
+.columna .vacio { color: var(--tinta-suave); font-size: .95rem; margin: 0; }
+.tarjeta-pedido .avanzar { width: 100%; margin-top: .4rem; background: var(--marca); border-color: var(--marca); color: #fff; }
+.tarjeta-pedido .avanzar:hover { background: var(--marca-oscura); }
+
+.disponibilidad li {
+  display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+  background: var(--tarjeta); border: 1px solid var(--linea); border-radius: var(--radio);
+  padding: .55rem 1rem; margin-bottom: .5rem;
+}
+.pie-encargado { margin-top: 2rem; }
+
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+.pedido .primario { margin-top: .9rem; }
